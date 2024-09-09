@@ -1,10 +1,9 @@
-import 'dart:nativewrappers/_internal/vm/lib/internal_patch.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutterteste/controller/course_controller.dart';
 import 'package:flutterteste/model/course_model.dart';
 import 'package:flutterteste/view/form_new_course_page.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutterteste/view/menu.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -45,6 +44,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MenuDrawer(
+        selectedMenuItem: 0,
+      ),
       appBar: AppBar(
         title: const Text("Lista de cursos"),
       ),
@@ -64,16 +66,26 @@ class _HomePageState extends State<HomePage> {
                   return Card(
                     elevation: 3,
                     child: Slidable(
-                      endActionPane: const ActionPane(
-                        motion: ScrollMotion(),
+                      endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
                         children: [
                           SlidableAction(
-                            onPressed: null,
+                            onPressed: (context) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => FormNewCoursePage(
+                                          courseEdit: snapshot
+                                              .data![index]))).then((value) {
+                                _futureCourses = getCourses();
+                                setState(() {});
+                              });
+                            },
                             icon: Icons.edit,
                             backgroundColor: Colors.grey,
                             foregroundColor: Colors.white,
                           ),
-                          SlidableAction(
+                          const SlidableAction(
                             onPressed: null,
                             backgroundColor: Color(0xFFFE4A49),
                             foregroundColor: Colors.white,

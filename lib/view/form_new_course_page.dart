@@ -3,7 +3,8 @@ import 'package:flutterteste/controller/course_controller.dart';
 import 'package:flutterteste/model/course_model.dart';
 
 class FormNewCoursePage extends StatefulWidget {
-  const FormNewCoursePage({super.key});
+  final CourseEntity? courseEdit;
+  const FormNewCoursePage({super.key, this.courseEdit});
 
   @override
   State<FormNewCoursePage> createState() => _FormNewCoursePageState();
@@ -14,8 +15,19 @@ class _FormNewCoursePageState extends State<FormNewCoursePage> {
   TextEditingController textNameController = TextEditingController();
   TextEditingController textDescriptionController = TextEditingController();
   TextEditingController textStartAtController = TextEditingController();
+  String id = "";
 
   CourseController controller = CourseController();
+  @override
+  void initState() {
+    if (widget.courseEdit != null) {
+      id = widget.courseEdit?.id ?? "";
+      textNameController.text = widget.courseEdit?.name ?? "";
+      textDescriptionController.text = widget.courseEdit?.description ?? "";
+      textStartAtController.text = widget.courseEdit?.startAt ?? "";
+    }
+    super.initState();
+  }
 
   postNewCourse() async {
     try {
@@ -29,6 +41,31 @@ class _FormNewCoursePageState extends State<FormNewCoursePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Curso cadastrado com sucesso!"),
+        ),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$e'),
+        ),
+      );
+    }
+  }
+
+  putUpdateCourse() async {
+    try {
+      await controller.putUpdateCourse(
+        CourseEntity(
+          id: id,
+          name: textNameController.text,
+          description: textDescriptionController.text,
+          startAt: textStartAtController.text,
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Curso atualizado com sucesso!"),
         ),
       );
       Navigator.pop(context);
@@ -84,7 +121,11 @@ class _FormNewCoursePageState extends State<FormNewCoursePage> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
-                      postNewCourse();
+                      if (widget.courseEdit != null) {
+                        putUpdateCourse();
+                      } else {
+                        postNewCourse();
+                      }
                     }
                   },
                   child: const Text("Salvar"),

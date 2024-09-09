@@ -18,6 +18,14 @@ class CourseController {
     }
   }
 
+  putUpdateCourse(CourseEntity courseEntity) async {
+    try {
+      await repository.putUpdateCourse(courseEntity);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   getLettersFromAvatar(String name) {
     String initials = name.split(" ").map((word) => word[0]).join('');
     return initials.substring(0, 2);
