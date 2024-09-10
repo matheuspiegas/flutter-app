@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: MenuDrawer(
+      drawer: const MenuDrawer(
         selectedMenuItem: 0,
       ),
       appBar: AppBar(
@@ -85,9 +85,38 @@ class _HomePageState extends State<HomePage> {
                             backgroundColor: Colors.grey,
                             foregroundColor: Colors.white,
                           ),
-                          const SlidableAction(
-                            onPressed: null,
-                            backgroundColor: Color(0xFFFE4A49),
+                          SlidableAction(
+                            onPressed: (context) async {
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: const Text('Confirmação'),
+                                  content: const Text(
+                                      'Confirma exclusão deste Curso?'),
+                                  actions: [
+                                    ElevatedButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        await controller.deleteCourse(
+                                            snapshot.data![index].id!);
+                                        Navigator.pop(context);
+                                      }, //aqui a chamada da função delete//
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              ).then((value) {
+                                if (value != null) {
+                                  _futureCourses = getCourses();
+                                  setState(() {});
+                                }
+                              });
+                            },
+                            backgroundColor: const Color(0xFFFE4A49),
                             foregroundColor: Colors.white,
                             icon: Icons.delete,
                           ),

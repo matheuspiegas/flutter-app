@@ -24,7 +24,9 @@ class _FormNewCoursePageState extends State<FormNewCoursePage> {
       id = widget.courseEdit?.id ?? "";
       textNameController.text = widget.courseEdit?.name ?? "";
       textDescriptionController.text = widget.courseEdit?.description ?? "";
-      textStartAtController.text = widget.courseEdit?.startAt ?? "";
+      textStartAtController.text = controller.dateTimeFormatToStringPtBr(
+              DateTime.parse(widget.courseEdit?.startAt ?? "")) ??
+          "--/--/----";
     }
     super.initState();
   }
@@ -35,7 +37,9 @@ class _FormNewCoursePageState extends State<FormNewCoursePage> {
         CourseEntity(
           name: textNameController.text,
           description: textDescriptionController.text,
-          startAt: textStartAtController.text,
+          startAt: controller.dateFormatStringPtBrToAPI(
+            textStartAtController.text,
+          ),
         ),
       );
       ScaffoldMessenger.of(context).showSnackBar(
@@ -60,7 +64,9 @@ class _FormNewCoursePageState extends State<FormNewCoursePage> {
           id: id,
           name: textNameController.text,
           description: textDescriptionController.text,
-          startAt: textStartAtController.text,
+          startAt: controller.dateFormatStringPtBrToAPI(
+            textStartAtController.text,
+          ),
         ),
       );
       ScaffoldMessenger.of(context).showSnackBar(
@@ -92,6 +98,9 @@ class _FormNewCoursePageState extends State<FormNewCoursePage> {
           child: Column(
             children: [
               TextFormField(
+                decoration: const InputDecoration(
+                  labelText: "Nome",
+                ),
                 controller: textNameController,
                 validator: (value) =>
                     value!.isEmpty ? "Campo obrigatório" : null,
@@ -100,6 +109,9 @@ class _FormNewCoursePageState extends State<FormNewCoursePage> {
                 height: 10,
               ),
               TextFormField(
+                decoration: const InputDecoration(
+                  labelText: "Descrição",
+                ),
                 validator: (value) =>
                     value!.isEmpty ? "Campo obrigatório" : null,
                 controller: textDescriptionController,
@@ -108,6 +120,24 @@ class _FormNewCoursePageState extends State<FormNewCoursePage> {
                 height: 10,
               ),
               TextFormField(
+                decoration: const InputDecoration(
+                  labelText: "Data de início",
+                  suffixIcon: Icon(Icons.calendar_today),
+                ),
+                onTap: () {
+                  showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2030),
+                    locale: const Locale('pt', 'BR'),
+                  ).then((value) {
+                    if (value != null) {
+                      textStartAtController.text =
+                          controller.dateTimeFormatToStringPtBr(value);
+                    }
+                  });
+                },
                 validator: (value) =>
                     value!.isEmpty ? "Campo obrigatório" : null,
                 controller: textStartAtController,
